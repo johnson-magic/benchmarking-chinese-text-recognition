@@ -1,4 +1,6 @@
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 import model.crnn as crnn
 import utils
 import data.dataset as dataset
@@ -13,14 +15,18 @@ import zhconv
 global max_acc
 max_acc = 0.0
 
-def trainBatch(crnn, criterion, optimizer, train_iter, converter):
+def trainBatch(crnn, criterion, optimizer, train_iter, converter, warp_ctc):
     data = next(train_iter)
     images, labels =data
     batch_size = images.size(0)
     preds = crnn(images)
     text, length = converter.encode(labels)
     predsSize = torch.IntTensor([preds.size(0)] * batch_size)
-    cost = criterion(preds, text, predsSize, length) / batch_size
+    if warp_ctc:
+        cost = criterion(preds, text, predsSize, length) / batch_size
+    else:
+        preds = F.log_softmax(preds, dim=-1)
+        cost = criterion(preds, text, predsSize, length) / batch_size
     crnn.zero_grad()
     cost.backward()
     optimizer.step()
@@ -108,6 +114,7 @@ if __name__ == '__main__':
     parser.add_argument('--imageW', type=int, default=256, help='')
     parser.add_argument('--nh', type=int, default=256, help='')
     parser.add_argument('--alpha_path', type=str, default='./data/benchmark.txt', help='')
+    parser.add_argument('--warp_ctc', action='store_true', help='baidu_ctc or pytorch_ctc')
     args = parser.parse_args()
 
     alpha_file = open(args.alpha_path, 'r')
@@ -116,7 +123,10 @@ if __name__ == '__main__':
 
     nclass = len(alphabet) + 1
     nc = 3
-    criterion = CTCLoss()
+    if args.warp_ctc:
+        criterion = CTCLoss()
+    else:
+        criterion = nn.CTCLoss(zero_infinity=True, reduction='sum')
     crnn = crnn.CRNN(nc, args.nh, nclass, args.imageH)
     crnn.apply(weights_init)
     crnn = crnn.cuda()
@@ -146,7 +156,7 @@ if __name__ == '__main__':
             for para in crnn.parameters():
                 para.requires_grad = True
             crnn.train()
-            cost = trainBatch(crnn, criterion, optimizer, train_iter, converter)
+            cost = trainBatch(crnn, criterion, optimizer, train_iter, converter, args.warp_ctc)
             loss_avg.add(cost)
             i += 1
             iters = len(train_dataloader) * epoch + i
