@@ -12,6 +12,7 @@ This repository contains datasets and baselines for benchmarking Chinese text re
 :star2: The code and trained weights of all baselines are available at [link](https://github.com/FudanVI/benchmarking-chinese-text-recognition/tree/main/model) for direct use.
 
 ## Updates
+Jul 6, 2023: Add pytorch-ctc feature.
 Dec 2, 2022: An updated version of the corresponding paper is available at arXiv.
 
 Aug 22, 2022: We upload the lmdb datasets of hard cases.
