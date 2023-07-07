@@ -1,11 +1,15 @@
-# Baseline
-We manually select six representative methods as baselines and refer to the following off-the-shelf PyTorch implementations to complete all experiments.
-* CRNN: https://github.com/meijieru/crnn.pytorch
-* ASTER: https://github.com/ayumiymk/aster.pytorch
-* MORAN: https://github.com/Canjie-Luo/MORAN_v2
-* SAR: https://github.com/liuch37/sar-pytorch
-* SEED: https://github.com/Pay20Y/SEED
-* TransOCR: https://github.com/FudanVI/FudanOCR/tree/main/scene-text-telescope
+# Getting Started
+
+1. clone the repo
+   ```
+   git clone --recursive https://github.com/johnson-magic/benchmarking-chinese-text-recognition
+   ```
+2. install packages
+   ```
+   pip install -r requirements.txt
+   ```
+
+
 
 ## Dependencies
 Use the configuration file "model_name.yaml" to create the environment of the corresponding baseline. When creating the environment for CRNN, the [warp_ctc_pytorch](https://github.com/SeanNaren/warp-ctc/tree/pytorch_bindings/pytorch_binding) should be installed additionally.
