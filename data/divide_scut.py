@@ -59,9 +59,9 @@ def generate_train_validation_dataset():
                 point, text = gt['point'], gt['text']
                 crop_img = image_process(file_path, point[0:2], point[2:4], point[4:6], point[6:8])
 
-                if index % 5 == 0:
+                if cnt % 5 == 0:
                     crop_img.save(os.path.join(validation_save_path, '{}.jpg'.format(cnt)))
-                    f_validtion.write('{} {}\n'.format(os.path.join(train_save_path, '{}.jpg'.format(cnt)), text.replace(' ', '')))
+                    f_validtion.write('{} {}\n'.format(os.path.join(validation_save_path, '{}.jpg'.format(cnt)), text.replace(' ', '')))
                 else:
                     crop_img.save(os.path.join(train_save_path, '{}.jpg'.format(cnt)))
                     f_train.write('{} {}\n'.format(os.path.join(train_save_path, '{}.jpg'.format(cnt)), text.replace(' ', '')))
